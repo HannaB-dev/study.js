@@ -1,36 +1,20 @@
-const http = require('http');
+const express = require('express');
+const bodyParser = require('body-parser');
 
-const server = http.createServer((req, res) => {
-    const url = req.url;
-    if (url === '/'){
-        res.setHeader('Content-Type', 'text/html');
-        res.write('<html>');
-        res.write('<head><title>Homework</title></head>');
-        res.write('<body><h1>Hello World!</h1></body>');
-        res.write('</html>');
-        return res.end();
-    }
-    if (url === '/test') {
-        res.setHeader('Content-Type', 'text/html');
-        res.write('<html>');
-        res.write('<head><title>Homework</title></head>');
-        res.write('<body><h1>Test Now</h1></body>');
-        res.write('</html');
-        return res.end();
-    }
-    if (url === '/redirect') {
-        // const body = [];
-        // req.on('data', chunk => {
-        //     body.push(chunck);
-        // });
-        // req.on('end', () => {
-        //     const parsedbody = Buffer.concat(body).toString();
-        //     //console.log(parsedBody.split('=')[1]);
-        // });
-        res.statusCode = 302;
-        res.setHeader('Location', '/');
-        res.end();
-    }
-}); 
+const app = express();
 
-server.listen(3000);
+const mainRoutes = require('./routes/main');
+const redirectRoutes = require('./routes/redirect');
+const testRoutes = require('./routes/test');
+
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(mainRoutes);
+app.use(redirectRoutes);
+app.use(testRoutes);
+
+app.use((req, res, next) => {
+    res.status(404).send('<h1>Page not found</h1>');
+});
+
+app.listen(3000);
